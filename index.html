@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>磷光长现 | 多时间尺度绿色余辉材料</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: radial-gradient(circle at 10% 20%, #0a0f1e, #03060c);
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            color: #eef5ff;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 40% 50%, rgba(80, 180, 150, 0.08), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 2;
+        }
+        .hero { text-align: center; margin-bottom: 2rem; }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(70, 200, 160, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(80, 220, 170, 0.5);
+            border-radius: 100px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            color: #baffe6;
+        }
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #a0f0da, #7ad0b0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .hero-sub {
+            font-size: 1.1rem;
+            color: #c0dfe8;
+            max-width: 700px;
+            margin: 0.5rem auto 0;
+            border-left: 3px solid #4bc0a0;
+            padding-left: 1rem;
+            font-weight: 300;
+        }
+        .divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #4bc0a0, #b0f0d0, #4bc0a0);
+            margin: 1rem auto 0;
+            border-radius: 4px;
+        }
+        .security-area { display: flex; justify-content: center; margin: 2rem 0 2rem; }
+        .security-card {
+            background: rgba(10, 20, 30, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            padding: 1rem 2rem;
+            text-align: center;
+            border: 1px solid rgba(75, 192, 160, 0.6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 15px rgba(75,192,160,0.3);
+            transition: 0.2s;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+        }
+        .security-card:hover { transform: scale(1.01); border-color: #7fffd0; box-shadow: 0 0 20px rgba(100,230,180,0.5); }
+        .security-label { font-size: 1rem; font-weight: 600; color: #bcf5e0; margin-bottom: 0.5rem; letter-spacing: 1px; }
+        .security-digits {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #e0ffe8, #7ae0c0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .tabs-container { display: flex; justify-content: center; gap: 1.5rem; margin: 1.5rem 0 2rem; flex-wrap: wrap; }
+        .tab-btn {
+            background: rgba(15, 30, 40, 0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(75, 192, 160, 0.4);
+            border-radius: 60px;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d0f0e8;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn i { font-size: 1.2rem; color: #6ad0b0; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #1f4a4a, #0e3a3a);
+            border-color: #6fe0c0;
+            box-shadow: 0 0 12px rgba(100, 220, 170, 0.5);
+            color: white;
+        }
+        .tab-btn:hover { transform: translateY(-3px); border-color: #7fffd0; background: #1f4040cc; }
+        .panel { background: rgba(8, 14, 24, 0.65); backdrop-filter: blur(8px); border-radius: 2rem; border: 1px solid rgba(90, 210, 170, 0.3); padding: 1.8rem; transition: all 0.2s; }
+        .panel.hidden { display: none; }
+        .step-controller {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 1.2rem;
+            background: #0c1c24a0;
+            border-radius: 3rem;
+            padding: 0.5rem 1rem;
+        }
+        .step-buttons { display: flex; gap: 8px; }
+        .step-btn {
+            background: #1f3e3e;
+            border: none;
+            color: #c0f0e0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+        .step-btn:hover { background: #4aa088; color: white; transform: scale(1.05); }
+        .step-indicator {
+            font-family: monospace;
+            background: #021218;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+        .auto-play {
+            background: #2a6b5e;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .step-desc {
+            background: #051e24;
+            border-radius: 1.2rem;
+            padding: 0.6rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            border-left: 4px solid #6fe0c0;
+        }
+        .energy-diagram {
+            text-align: center;
+            margin-bottom: 1rem;
+            background: #03101540;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            position: relative;
+        }
+        .image-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .principle-img {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: block;
+        }
+        .overlay-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.9s ease, transform 0.6s ease;
+        }
+        .overlay-img.show {
+            display: block;
+            opacity: 1;
+            animation: fadeInScale 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .subsection-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4bc0a0;
+            display: inline-block;
+        }
+        .materials-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        .material-card {
+            background: rgba(20, 35, 45, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            width: 160px;
+            text-align: center;
+            transition: 0.2s;
+            border: 1px solid rgba(75, 192, 160, 0.3);
+        }
+        .material-card:hover { transform: translateY(-5px); border-color: #6fe0c0; }
+        .material-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 1rem;
+            background: #0a1a20;
+            margin-bottom: 0.8rem;
+        }
+        .material-name { font-weight: 500; font-size: 1rem; color: #d0f0e8; }
+        .steps-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 0.5rem;
+            margin: 2rem 0 1rem;
+        }
+        .step-card {
+            flex: 1;
+            min-width: 240px;
+            background: rgba(12, 25, 35, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(90, 210, 170, 0.4);
+            transition: 0.2s;
+        }
+        .step-card:hover { border-color: #7ae0c0; background: rgba(20, 45, 55, 0.8); }
+        .step-video {
+            width: 100%;
+            border-radius: 1rem;
+            background: #021218;
+            margin-bottom: 0.8rem;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+        .step-text { font-size: 0.85rem; font-weight: 500; color: #d4f0e8; line-height: 1.4; }
+        .arrow-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #6ad0b0;
+            min-width: 40px;
+        }
+        @media (max-width: 1000px) {
+            .steps-container { flex-direction: column; align-items: center; }
+            .step-card { width: 100%; max-width: 400px; }
+            .arrow-icon { transform: rotate(90deg); margin: 0.2rem 0; }
+        }
+        .result-section { margin-bottom: 2rem; }
+        .result-subtitle {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 1rem 0 0.8rem;
+            color: #caf5e0;
+            border-left: 4px solid #4bc0a0;
+            padding-left: 0.8rem;
+        }
+        .result-img {
+            max-width: 100%;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            background: #0a1a20;
+        }
+        .result-text {
+            background: #0a1a1f60;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0.5rem 0;
+        }
+        .footer { text-align: center; margin-top: 3rem; font-size: 0.75rem; opacity: 0.6; border-top: 1px dashed #4bc0a060; padding-top: 1.5rem; }
+        .hidden { display: none; }
+        @keyframes dropFall { 0% { transform: translateY(-8px); opacity: 0.4; } 50% { transform: translateY(10px); opacity: 1; } 100% { transform: translateY(-8px); opacity: 0.6; } }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="hero-badge"><i class="fas fa-flask"></i> 大学生化学实验创新设计竞赛 · 新创实验</div>
+        <h1>磷光长现 — 多时间尺度绿色余辉材料</h1>
+        <div class="hero-sub"><i class="fas fa-leaf"></i> 藻踪金迹 · 余辉可期 | 构筑动态防伪与多级发光体系</div>
+        <div class="divider"></div>
+        <p style="margin-top: 0.8rem;"><i class="fas fa-shield-alt"></i> 二级防伪技术 · 时间分辨发光 · 绿色合成策略</p>
+    </div>
+
+    <div class="security-area">
+        <div class="security-card" id="securityClicker">
+            <div class="security-label"><i class="fas fa-lock"></i> 怎样达成二级防伪技术</div>
+            <div class="security-digits" id="dynamicCode">8888</div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab-btn active" data-tab="principle"><i class="fas fa-atom"></i> 实验原理</div>
+        <div class="tab-btn" data-tab="operation"><i class="fas fa-vial"></i> 实验操作</div>
+        <div class="tab-btn" data-tab="result"><i class="fas fa-chart-line"></i> 实验结果</div>
+    </div>
+
+    <!-- 实验原理面板 -->
+    <div id="principlePanel" class="panel">
+        <div class="step-controller">
+            <div class="step-buttons">
+                <button class="step-btn" id="prevStepBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="step-btn" id="nextStepBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="step-indicator" id="stepIndicator">步骤 1 / 13</div>
+            <button class="auto-play" id="autoPlayBtn"><i class="fas fa-play"></i> 自动播放</button>
+        </div>
+        <div class="step-desc" id="stepDesc">✨ ① 看原理。分子发光分两种：荧光和磷光。</div>
+        <div class="energy-diagram">
+            <div class="image-container">
+                <img id="principleImage" class="principle-img" alt="原理示意图">
+                <img id="overlayImage" class="overlay-img" alt="堆叠动画图">
+            </div>
+        </div>
+    </div>
+
+    <!-- 实验操作面板 -->
+    <div id="operationPanel" class="panel hidden">
+        <div>
+            <div class="subsection-title"><i class="fas fa-boxes"></i> 实验所需材料</div>
+            <div class="materials-grid" id="materialsGrid"></div>
+        </div>
+        <div style="margin-top: 2rem;">
+            <div class="subsection-title"><i class="fas fa-hands-helping"></i> 材料制备实操</div>
+            <div class="steps-container" id="stepsContainer"></div>
+        </div>
+    </div>
+
+    <!-- 实验结果面板（四部分） -->
+    <div id="resultPanel" class="panel hidden">
+        <!-- 第一部分：课程安排 -->
+        <div class="result-section">
+            <div class="result-subtitle"><i class="fas fa-calendar-alt"></i> 课程安排</div>
+            <img class="result-img" src="result_0.png" alt="课程安排" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'300\' viewBox=\'0 0 600 300\'%3E%3Crect width=\'600\' height=\'300\' fill=\'%23133038\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2380e0c0\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+        </div>
+
+        <!-- 第二部分：实验拓展-仪器表征 -->
+        <div class="result-section">
+            <div class="result-subtitle"><i class="fas fa-microscope"></i> 实验拓展-仪器表征</div>
+            <img class="result-img" src="result_1.png" alt="仪器表征" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'300\' viewBox=\'0 0 600 300\'%3E%3Crect width=\'600\' height=\'300\' fill=\'%23133038\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2380e0c0\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+            <div class="result-text">
+                学生根据兴趣与设备条件自主选择，从"被动测数据"升级到"主动选手段"。
+            </div>
+        </div>
+
+        <!-- 第三部分：实验总结 -->
+        <div class="result-section">
+            <div class="result-subtitle"><i class="fas fa-clipboard-list"></i> 实验总结</div>
+            <img class="result-img" src="result_2.png" alt="实验总结" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'300\' viewBox=\'0 0 600 300\'%3E%3Crect width=\'600\' height=\'300\' fill=\'%23133038\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2380e0c0\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+        </div>
+
+        <!-- 第四部分：实验应用-经济与民生领域 -->
+        <div class="result-section">
+            <div class="result-subtitle"><i class="fas fa-chart-line"></i> 实验应用-经济与民生领域</div>
+            <img class="result-img" src="result_3.png" alt="应用领域" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'300\' viewBox=\'0 0 600 300\'%3E%3Crect width=\'600\' height=\'300\' fill=\'%23133038\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2380e0c0\' font-size=\'14\'%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+        </div>
+    </div>
+    <div class="footer"><i class="fas fa-lightbulb"></i> 藻踪金迹·余辉可期——多时间尺度绿色余辉材料 | 磷光长现</div>
+</div>
+
+<script>
+    // 二级防伪数字
+    const codeMap = ["8888", "9076", "7771"];
+    let codeIdx = 0;
+    const codeDiv = document.getElementById("dynamicCode");
+    document.getElementById("securityClicker").addEventListener("click", () => {
+        codeDiv.style.transform = "scale(1.1)";
+        setTimeout(() => codeDiv.style.transform = "scale(1)", 150);
+        codeDiv.innerText = codeMap[codeIdx];
+        codeIdx = (codeIdx + 1) % codeMap.length;
+    });
+
+    // 选项卡切换
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = {
+        principle: document.getElementById('principlePanel'),
+        operation: document.getElementById('operationPanel'),
+        result: document.getElementById('resultPanel')
+    };
+    function switchTab(tabId) {
+        Object.values(panels).forEach(p => p.classList.add('hidden'));
+        panels[tabId].classList.remove('hidden');
+        tabs.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
+    }
+    tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+    
+    // 实验原理：13张图片 + 步骤13延迟叠加（使用相对路径）
+    const imageBasePath = "yuanli_";
+    const overlayBasePath = "yuanli_14.png";
+    const stepsText = [
+        "① 看原理。分子发光分两种：荧光和磷光。",
+        "② 分子吸收光能，从基态跃迁到激发态。",
+        "③ 如果直接返回基态，发出的是荧光，寿命纳秒级，极短。",
+        "④ 我们要的是磷光——三重态向基态的跃迁。这个跃迁自旋禁阻，所以寿命长，能持续发光。",
+        "⑤ 但室温下，三重态不稳定。分子振动、氧气碰撞都会耗散能量，磷光在室温下很难存活。",
+        "⑥ 必须给三重态一个稳定环境——这就是刚性限域。",
+        "⑦", "⑧", "⑨",
+        "⑩ 利用蛋盒理论将物理化学，无机化学，仪器分析的核心知识点融为一体，主体为海藻酸钠与Ca²⁺的室温交联，海藻酸钠G单元像两个爪子抓住钙离子，形成经典的蛋盒结构",
+        "⑪ 利用蛋盒理论将物理化学，无机化学，仪器分析的核心知识点融为一体，主体为海藻酸钠与Ca²⁺的室温交联，海藻酸钠G单元像两个爪子抓住钙离子，形成经典的蛋盒结构",
+        "⑫ 吖啶酮乙酸含芳香酮基，吸收紫外光后经系间窜越产生三重态。游离时分子运动剧烈导致三重态猝灭；被蛋盒包埋后，刚性网络抑制非辐射跃迁，三重态寿命延长，室温下即可观察到磷光",
+        "⑬ 无机化学的电子构型理论指导我们选择金属离子钙离子和锶离子，都是d⁰构型，无顺磁性，不会猝灭发光，但锶离子水合半径更大，交联网络更致密，对客体保护性更强"
+    ];
+    
+    let currentStep = 0;
+    let autoInterval = null;
+    let overlayTimer = null;
+    const principleImg = document.getElementById("principleImage");
+    const overlayImg = document.getElementById("overlayImage");
+    
+    function clearOverlayTimer() {
+        if (overlayTimer) { clearTimeout(overlayTimer); overlayTimer = null; }
+        overlayImg.classList.remove("show");
+        overlayImg.src = "";
+    }
+    function showOverlayWithDelay() {
+        if (overlayTimer) clearTimeout(overlayTimer);
+        overlayTimer = setTimeout(() => {
+            if (currentStep === 12) {
+                overlayImg.src = overlayBasePath;
+                overlayImg.alt = "堆叠示意图";
+                overlayImg.classList.remove("show");
+                void overlayImg.offsetWidth;
+                overlayImg.classList.add("show");
+                overlayImg.onerror = function() {
+                    this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23133038'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2380e0c0' font-size='14'%3E叠加图加载失败%3C/text%3E%3C/svg%3E";
+                };
+            }
+            overlayTimer = null;
+        }, 3000);
+    }
+    function updateImageAndDesc(stepIdx) {
+        clearOverlayTimer();
+        const imgNumber = stepIdx + 1;
+        const imgPath = imageBasePath + imgNumber + ".png";
+        principleImg.src = imgPath;
+        principleImg.alt = "原理示意图 " + imgNumber;
+        if (stepIdx === 12) showOverlayWithDelay();
+        else { overlayImg.classList.remove("show"); overlayImg.src = ""; }
+        let descText = stepsText[stepIdx];
+        if (descText === "⑦" || descText === "⑧" || descText === "⑨") descText += " （步骤）";
+        document.getElementById("stepDesc").innerHTML = `<i class="fas fa-magic"></i> ${descText}`;
+        document.getElementById("stepIndicator").innerText = `步骤 ${stepIdx+1} / ${stepsText.length}`;
+        principleImg.onerror = function() {
+            this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='300' viewBox='0 0 500 300'%3E%3Crect width='500' height='300' fill='%23133038'/%3E%3Ctext x='50%25' y='40%25' dominant-baseline='middle' text-anchor='middle' fill='%2380e0c0' font-size='14'%3E图片加载失败%3C/text%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='%23a0d0c0' font-size='12'%3E请检查路径%3C/text%3E%3C/svg%3E";
+        };
+    }
+    function setStep(stepIdx) { currentStep = Math.min(Math.max(stepIdx, 0), stepsText.length-1); updateImageAndDesc(currentStep); }
+    function nextStep() { setStep(currentStep+1); }
+    function prevStep() { setStep(currentStep-1); }
+    document.getElementById("prevStepBtn").addEventListener("click", prevStep);
+    document.getElementById("nextStepBtn").addEventListener("click", nextStep);
+    const autoBtn = document.getElementById("autoPlayBtn");
+    autoBtn.addEventListener("click", () => {
+        if (autoInterval) { clearInterval(autoInterval); autoInterval = null; autoBtn.innerHTML = '<i class="fas fa-play"></i> 自动播放'; }
+        else { autoInterval = setInterval(() => { if (currentStep+1 >= stepsText.length) setStep(0); else nextStep(); }, 3000); autoBtn.innerHTML = '<i class="fas fa-stop"></i> 停止'; }
+    });
+    setStep(0);
+    
+    // 实验操作模块（相对路径）
+    const materials = [
+        { name: "海藻酸钠", img: "cailiao_1.png" },
+        { name: "吖啶酮乙酸", img: "cailiao_2.png" },
+        { name: "硝酸钙", img: "cailiao_3.png" },
+        { name: "乙酸锶", img: "cailiao_4.png" }
+    ];
+    const operations = [
+        { text: "1. 配制溶液并超声", video: "video_1.mp4" },
+        { text: "2. 加入海藻酸钠", video: "video_2.mp4" },
+        { text: "3. 配置金属离子溶液（自选配比）", video: "video_3.mp4" },
+        { text: "4. 滴加成球", video: "video_4.mp4" },
+        { text: "5. 静置熟化", video: "video_5.mp4" },
+        { text: "6. 冷冻干燥", video: "video_6.mp4" }
+    ];
+    const materialsGrid = document.getElementById("materialsGrid");
+    if (materialsGrid) {
+        materials.forEach(mat => {
+            const card = document.createElement("div"); card.className = "material-card";
+            const img = document.createElement("img"); img.className = "material-img"; img.src = mat.img; img.alt = mat.name;
+            img.onerror = function() { this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23133038'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236ad0b0' font-size='12'%3E图片缺失%3C/text%3E%3C/svg%3E"; };
+            const nameDiv = document.createElement("div"); nameDiv.className = "material-name"; nameDiv.innerText = mat.name;
+            card.appendChild(img); card.appendChild(nameDiv);
+            materialsGrid.appendChild(card);
+        });
+    }
+    const stepsContainer = document.getElementById("stepsContainer");
+    if (stepsContainer) {
+        operations.forEach((op, idx) => {
+            const stepCard = document.createElement("div"); stepCard.className = "step-card";
+            const video = document.createElement("video"); video.className = "step-video"; video.controls = true; video.preload = "metadata";
+            video.poster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 300 169'%3E%3Crect width='300' height='169' fill='%230a1a20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236ad0b0' font-size='14'%3E视频加载%3C/text%3E%3C/svg%3E";
+            const source = document.createElement("source"); source.src = op.video; source.type = "video/mp4";
+            video.appendChild(source);
+            video.onerror = () => { video.poster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='169' viewBox='0 0 300 169'%3E%3Crect width='300' height='169' fill='%23133038'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffaa88' font-size='12'%3E视频未找到%3C/text%3E%3C/svg%3E"; };
+            const textDiv = document.createElement("div"); textDiv.className = "step-text"; textDiv.innerText = op.text;
+            stepCard.appendChild(video); stepCard.appendChild(textDiv);
+            stepsContainer.appendChild(stepCard);
+            if (idx < operations.length - 1) {
+                const arrowDiv = document.createElement("div"); arrowDiv.className = "arrow-icon"; arrowDiv.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                stepsContainer.appendChild(arrowDiv);
+            }
+        });
+    }
+</script>
+</body>
+</html>
